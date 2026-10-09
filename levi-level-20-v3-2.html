@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LEVI // LEVEL 20</title>
+<style>
+:root{--g:#62ff8a;--bg:#050807;--dim:#9bb9a3;--red:#ff6262}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--g);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;min-height:100vh}
+.wrap{max-width:760px;margin:auto;padding:28px 18px 70px}.terminal{border:1px solid #285a36;border-radius:14px;padding:22px;box-shadow:0 0 35px #0c3518}
+h1{font-size:clamp(27px,7vw,50px);margin:5px 0 18px;color:#f1fff4}h2{color:#f1fff4}.dim{color:var(--dim)}.ok{color:var(--g)}.bad{color:var(--red)}
+button,input{font:inherit}button{background:var(--g);color:#041006;border:0;border-radius:8px;padding:13px 18px;font-weight:800;margin-top:12px;cursor:pointer}
+input{width:100%;background:#07120a;color:var(--g);border:1px solid #397b4a;border-radius:7px;padding:13px;margin-top:10px}
+pre{white-space:pre-wrap;background:#020403;border:1px solid #183a22;padding:14px;border-radius:8px;overflow:auto}
+#msg{min-height:25px;margin-top:12px}.cursor:after{content:"_";animation:b 1s infinite}@keyframes b{50%{opacity:0}}
+.bar{height:13px;border:1px solid #397b4a;border-radius:8px;overflow:hidden;margin:18px 0}.fill{height:100%;width:0;background:var(--g);transition:width 1.8s}
+.money{font-size:clamp(58px,16vw,105px);font-weight:900;color:#f1fff4;text-align:center;margin:30px 0;text-shadow:0 0 24px #62ff8a}
+.confetti{position:fixed;top:-15px;width:10px;height:18px;animation:fall linear forwards;z-index:9}@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.small{font-size:13px}.egg{color:#07120a;user-select:none}.egg:hover{color:var(--dim)}
+</style>
+</head>
+<body><div class="wrap"><div class="terminal" id="app"></div></div>
+<script>
+const app=document.querySelector('#app'); let step=0,tries=0;
+const beep=(f=650,d=.06)=>{try{let a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=f;o.connect(g);g.connect(a.destination);g.gain.value=.035;o.start();o.stop(a.currentTime+d)}catch(e){}};
+function shell(title,body,button='CONTINUE'){app.innerHTML=`<div class="dim">root@birthday-system:~$ ./levi20</div><h1>${title}</h1>${body}<div id="msg"></div>${button?`<button onclick="next()">${button}</button>`:''}`;}
+function next(){beep();step++;render()}
+function answer(expected,success){let v=document.querySelector('#ans').value.trim().toLowerCase(),m=document.querySelector('#msg');if(v===expected){beep(900);m.innerHTML='<span class="ok">✓ ACCESS GRANTED</span>';setTimeout(()=>{step++;render()},700)}else{tries++;beep(180,.15);m.innerHTML=`<span class="bad">✗ ACCESS DENIED // attempt ${tries}</span><br><span class="dim">Hint: developers debug. Try again.</span>`}}
+function confetti(){for(let i=0;i<90;i++){let x=document.createElement('i');x.className='confetti';x.style.left=Math.random()*100+'vw';x.style.animationDuration=(2+Math.random()*3)+'s';x.style.background=['#62ff8a','#fff','#9bb9a3','#ffd75f'][Math.floor(Math.random()*4)];document.body.appendChild(x);setTimeout(()=>x.remove(),5200)}}
+function checkCodeReview(){let v=document.querySelector('#ans').value.replace(/\s/g,'').toLowerCase(),m=document.querySelector('#msg');if(['20,40','[20,40]'].includes(v)){beep(900);m.innerHTML='<span class="ok">✓ ACCESS GRANTED</span>';setTimeout(()=>{step++;render()},700)}else{tries++;beep(180,.15);m.innerHTML=`<span class="bad">✗ ACCESS DENIED // attempt ${tries}</span><br><span class="dim">Hint: follow the filter, then the map.</span>`}}
+function render(){
+if(step===0)shell('LEVI // LEVEL 20',`<p class="cursor">Birthday update detected.</p><pre>USER: LEVI
+ROLE: SOFTWARE DEVELOPER
+CURRENT VERSION: 19.9
+UPDATE AVAILABLE: 20.0</pre><p class="dim">Warning: installation may unlock unexpected privileges.</p>`,'START SYSTEM');
+else if(step===1){shell('INSTALLING v20.0',`<p>Initializing birthday.exe...</p><div class="bar"><div class="fill" id="f"></div></div><p id="load" class="dim">Checking dependencies...</p>`,null);setTimeout(()=>f.style.width='100%',100);setTimeout(()=>load.innerHTML='✓ Version 20.0 installed.<br>Security verification required.',1900);setTimeout(()=>{app.innerHTML+=`<button onclick="next()">BEGIN SECURITY CHECK</button>`},2400)}
+else if(step===2)q('SECURITY CHECK 01/04',`Decode this binary payload:<pre>01001100 01000101 01010110 01001001</pre><p class="dim">Enter decoded string:</p>`,'levi');
+else if(step===3)q('SECURITY CHECK 02/04',`Production is broken. Find the value that fixes the bug:<pre>let age = 19;
+
+if (age === 20) {
+  releaseBirthdayMoney();
+}</pre><p class="dim">Enter the correct value:</p>`,'20');
+else if(step===4){app.innerHTML=`<div class="dim">root@birthday-system:~$ code_review</div><h2>SECURITY CHECK 03/04</h2><p>CODE REVIEW REQUIRED</p><pre>const numbers = [1, 2, 3, 4, 5];
+
+const result = numbers
+  .filter(n => n % 2 === 0)
+  .map(n => n * 10);
+
+console.log(result);</pre><p>What is the output?</p><p class="dim">Enter answer:</p><input id="ans" autocomplete="off" autocapitalize="none"><div id="msg"></div><button onclick="checkCodeReview()">VERIFY</button>`;document.querySelector('#ans').onkeydown=e=>{if(e.key==='Enter')checkCodeReview()};document.querySelector('#ans').focus()}
+else if(step===5)q('FINAL AUTHORIZATION',`Last key required:<pre>2² × 5² = ?</pre><p class="dim">Enter access code:</p>`,'100');
+else if(step===6){shell('SYSTEM ERROR',`<pre class="bad">FATAL ERROR 0x20:
+Birthday funds corrupted.
+
+Attempting rollback...
+Deleting bonus...
+██████████ 87%</pre><p class="bad">DO NOT TURN OFF LEVI.</p>`,null);setTimeout(()=>{app.innerHTML=`<div class="dim">root@birthday-system:~$ emergency_fix</div><h1>JUST KIDDING.</h1><p class="ok">No money was harmed during this operation. ✓</p><button onclick="next()">DECRYPT BIRTHDAY BONUS</button>`},2800)}
+else if(step===7){shell('DECRYPTING...',`<pre id="count">Encrypted birthday package located.
+Authorization: PAPA + MAMA ✓
+
+Decrypting in 3...</pre>`,null);let n=3;let t=setInterval(()=>{n--; if(n>0)count.innerHTML=`Encrypted birthday package located.
+Authorization: PAPA + MAMA ✓
+
+Decrypting in ${n}...`;else{clearInterval(t);step++;render()}},900)}
+else {app.innerHTML=`<div class="dim">root@birthday-system:~$ releaseBirthdayMoney()</div><h1>ACCESS GRANTED ✓</h1><p>LEVEL 20 successfully activated.</p><div class="money">€200</div><pre>BIRTHDAY FUNDS UNLOCKED ✓
+USER: LEVI
+AGE: 20
+ROLE: SOFTWARE DEVELOPER
+BONUS STATUS: DEPLOYED</pre><p>Gefeliciteerd met je 20e verjaardag!</p><p>20 jaar oud. Software Developer. En €200 rijker. ✓</p><p>Besteed het verstandig...</p><p>...of niet. Je bent nu 20.</p><p><strong>Heel veel liefs,<br>papa &amp; mama ❤️</strong></p><p class="small dim">P.S. Geen bugs gevonden. Voorlopig.</p><span class="egg" onclick="this.style.color='#62ff8a';this.innerHTML='EASTER EGG UNLOCKED: +100 developer XP ✓'">sudo show_secret</span>`;confetti();beep(1000,.25)}
+}
+function q(title,body,expected){app.innerHTML=`<div class="dim">root@birthday-system:~$ verify</div><h2>${title}</h2>${body}<input id="ans" autocomplete="off" autocapitalize="none" onkeydown="if(event.key==='Enter')answer('${expected}')"><div id="msg"></div><button onclick="answer('${expected}')">VERIFY</button>`;document.querySelector('#ans').focus()}
+render();
+</script></body></html>
